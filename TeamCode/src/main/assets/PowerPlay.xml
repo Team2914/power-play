@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="Parking1" size="50.000000 50.000000" />
+    <ImageTarget name="Parking2" size="50.000000 50.000000" />
+    <ImageTarget name="Parking3" size="50.000000 25.333336" />
+    <ImageTarget name="RedRear" size="0.279000 0.215591" />
+    <ImageTarget name="RedAudience" size="0.279000 0.215591" />
+    <ImageTarget name="BlueRear" size="0.279000 0.215591" />
+    <ImageTarget name="BlueAudience" size="0.279000 0.215591" />
+  </Tracking>
+</QCARConfig>

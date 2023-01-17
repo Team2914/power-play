@@ -1,93 +1,96 @@
 package org.firstinspires.ftc.teamcode.utils;
 
 public class Utils {
-    private static double inchToUnit(double l) {
-        return l * Config.scale;
+    private static double in(double l) {
+        return l * Config.SCALE;
     }
 
-    public static double[] findCompensation(double headingX, double headingY) {
-        final double frontAxleLen = Config.frontAxleLen;
-        final double backAxleLen = Config.backAxleLen;
-        final double axleDist = Config.axleDistance;
-        final double comY = Config.comY;
-        final double comX = Config.comX;
-        final double wheelWidth = Config.wheelWidth;
-        final double wheelHeight = Config.wheelHeight;
-        final double planeSize = Config.planeSize;
-        final double scale = Config.scale;
-        final double unitLen = Config.unitLen;
-        final double unitLen2 = inchToUnit(unitLen) / planeSize;
+    public static int inchesToTicks(double inches, double ticksPerRev, double wheelDiameter) {
+        return (int)((ticksPerRev / wheelDiameter * Math.PI * inches) + 0.5);
+    }
 
+    public static double[] findCompensation(double headingI, double headingJ) {
+        double SIZE = Config.SIZE;
+        double UNITPIXLEN = in(Config.UNITLEN)/SIZE;
         double scaleLeft = 1;
         double scaleRight = 1;
 
-        double axleUnitDist = inchToUnit(axleDist / 2.0) / planeSize;
-        double frontAxleY = 0.5 + axleUnitDist;
-        double backAxleY = 0.5 - axleUnitDist;
+        // Draw center line
+        double axlePixelDistance = in(Config.axleDistance/2.0)/SIZE;
+        double frontAxleY = 0.5+axlePixelDistance;
+        double backAxleY = 0.5-axlePixelDistance;
 
-        double frontAxleUnitLen = inchToUnit(frontAxleLen / 2.0) / planeSize;
-        double frontLWheelX = 0.5 - frontAxleUnitLen;
-        double frontRWheelX = 0.5 + frontAxleUnitLen;
+        // Draw front axle line
+        double frontAxlePixelLength = in(Config.frontAxleLength/2.0)/SIZE;
+        double frontLeftWheelX = 0.5-frontAxlePixelLength;
+        double frontRightWheelX = 0.5+frontAxlePixelLength;
 
-        double backAxleUnitLen = inchToUnit(backAxleLen / 2.0) / planeSize;
-        double backLWheelX = 0.5 - backAxleUnitLen;
-        double backRWheelX = 0.5 + backAxleUnitLen;
+        // Draw back axle line
+        double backAxlePixelLength = in(Config.backAxleLength/2.0)/SIZE;
+        double backLeftWheelX = 0.5-backAxlePixelLength;
+        double backRightWheelX = 0.5+backAxlePixelLength;
 
-        // The center of mass in our plane
-        double unitCOMX = 0.5 + (inchToUnit(comX) / planeSize);
-        double unitCOMY = 0.5 + (inchToUnit(comY) / planeSize);
 
-        // Heading vector
-        Vector2 v_heading =
-                new Vector2(unitCOMX, unitCOMY, inchToUnit(headingX) / planeSize, inchToUnit(headingY) / planeSize);
+        // Draw center of mass
+        double pixelCOMX = in(Config.COMX)/SIZE;
+        double pixelCOMY = in(Config.COMY)/SIZE;
 
-        // Center of mass to wheel vectors
-        Vector2 v_frontLeftCOM =
-                new Vector2(unitCOMX, unitCOMY, frontLWheelX - unitCOMX, frontAxleY - unitCOMY);
-        Vector2 v_frontRightCOM =
-                new Vector2(unitCOMX, unitCOMY, frontRWheelX - unitCOMX, frontAxleY - unitCOMX);
-        Vector2 v_backLeftCOM =
-                new Vector2(unitCOMX, unitCOMY, backLWheelX - unitCOMX, backAxleY - unitCOMY);
-        Vector2 v_backRightCOM =
-                new Vector2(unitCOMX, unitCOMY, backRWheelX - unitCOMX, backAxleY - unitCOMY);
+        // Build COM to wheel vectors
+        Vector frontLeftCOMVector = new Vector(0.5+pixelCOMX,0.5+pixelCOMY, frontLeftWheelX-0.5-pixelCOMX,frontAxleY-0.5-pixelCOMY);
+        Vector frontRightCOMVector = new Vector(0.5+pixelCOMX,0.5+pixelCOMY, frontRightWheelX-0.5-pixelCOMX,frontAxleY-0.5-pixelCOMY);
+        Vector backLeftCOMVector = new Vector(0.5+pixelCOMX,0.5+pixelCOMY, backLeftWheelX-0.5-pixelCOMX,backAxleY-0.5-pixelCOMY);
+        Vector backRightCOMVector = new Vector(0.5+pixelCOMX,0.5+pixelCOMY, backRightWheelX-0.5-pixelCOMX,backAxleY-0.5-pixelCOMY);
 
-        // Wheel drive vectors
-        Vector2 v_frontLeftDrive =
-                new Vector2(frontLWheelX, frontAxleY, -unitLen2, unitLen2);
-        Vector2 v_frontRightDrive =
-                new Vector2(frontRWheelX, frontAxleY, unitLen2, unitLen2);
-        Vector2 v_backLeftDrive =
-                new Vector2(backLWheelX, backAxleY, unitLen2, unitLen2);
-        Vector2 v_backRightDrive =
-                new Vector2(backRWheelX, backAxleY, -unitLen2, unitLen2);
+        // Draw COM to wheel vectors
+        /*frontLeftCOMVector.draw(canvas.RED, 0.005);
+        frontRightCOMVector.draw(canvas.RED, 0.005);
+        backLeftCOMVector.draw(canvas.RED, 0.005);
+        backRightCOMVector.draw(canvas.RED, 0.005);*/
+
+        // Build Heading Vector
+        Vector headingVector = new Vector(0.5+pixelCOMX,0.5+pixelCOMY, in(headingI)/SIZE, in(headingJ)/SIZE);
+
+        // Build wheel drive vectors
+        Vector frontLeftDriveVector = new Vector(frontLeftWheelX, frontAxleY, UNITPIXLEN*(-1), UNITPIXLEN);
+        Vector frontRightDriveVector = new Vector(frontRightWheelX, frontAxleY, UNITPIXLEN, UNITPIXLEN);
+        Vector backLeftDriveVector = new Vector(backLeftWheelX, backAxleY, UNITPIXLEN, UNITPIXLEN);
+        Vector backRightDriveVector = new Vector(backRightWheelX, backAxleY, UNITPIXLEN*(-1), UNITPIXLEN);
+        System.out.println(frontLeftDriveVector.length());
 
         // Project heading onto drive vectors
-        Vector2 v_frontLeft =
-                v_frontLeftDrive.parallelProj(v_heading, v_frontLeftDrive.x, v_frontLeftDrive.y);
-        Vector2 v_frontRight =
-                v_frontRightDrive.parallelProj(v_heading, v_frontRightDrive.x, v_frontRightDrive.y);
-        Vector2 v_backLeft =
-                v_backLeftDrive.parallelProj(v_heading, v_backLeftDrive.x, v_backLeftDrive.y);
-        Vector2 v_backRight =
-                v_backRightDrive.parallelProj(v_heading, v_backRightDrive.x, v_backRightDrive.y);
+        Vector frontLeftVector = frontLeftDriveVector.parallelProjection(headingVector, frontLeftDriveVector.x, frontLeftDriveVector.y);
+        Vector frontRightVector = frontRightDriveVector.parallelProjection(headingVector, frontRightDriveVector.x, frontRightDriveVector.y);
+        Vector backLeftVector = backLeftDriveVector.parallelProjection(headingVector, backLeftDriveVector.x, backLeftDriveVector.y);
+        Vector backRightVector = backRightDriveVector.parallelProjection(headingVector, backRightDriveVector.x, backRightDriveVector.y);
 
-        v_backLeft.scale(scaleLeft);
-        v_backRight.scale(scaleRight);
+        backLeftVector.scale(scaleLeft);
+        backRightVector.scale(scaleRight);
 
-        // Calculate wheel velocity
-        double frontLeftVel =
-                v_frontLeft.len() * Math.signum(v_frontLeft.dot(v_frontLeftDrive));
-        double frontRightVel =
-                v_frontRight.len() * Math.signum(v_frontRight.dot(v_frontRightDrive));
-        double backLeftVel =
-                v_backLeft.len() * Math.signum(v_backLeft.dot(v_backLeftDrive));
-        double backRightVel =
-                v_backRight.len() * Math.signum(v_backRight.dot(v_backRightDrive));
+        // Calc wheel velocity
+        double wheelPixelWidth = in(Config.wheelWidth)/SIZE;
+        double wheelPixelHeight = in(Config.wheelHeight)/SIZE;
+        double frontLeftVel = frontLeftVector.length()*Math.signum(frontLeftVector.dot(frontLeftDriveVector));
+        double frontRightVel = frontRightVector.length()*Math.signum(frontRightVector.dot(frontRightDriveVector));
+        double backLeftVel = backLeftVector.length()*Math.signum(backLeftVector.dot(backLeftDriveVector));
+        double backRightVel = backRightVector.length()*Math.signum(backRightVector.dot(backRightDriveVector));
 
-        // Calculate torque vectors
-        Vector2 v_frontLeftTorque =
-                v_frontLeftCOM.perpendicularProj(v_frontLeftDrive, v_frontLeftDrive.x, v_frontLeftDrive.y);
+        // Calc torque vectors
+        Vector frontLeftTorqueVector = frontLeftCOMVector.perpendicularProjection(frontLeftDriveVector,frontLeftDriveVector.x, frontLeftDriveVector.y);
+        Vector frontRightTorqueVector = frontRightCOMVector.perpendicularProjection(frontRightDriveVector,frontRightDriveVector.x, frontRightDriveVector.y);
+        Vector backLeftTorqueVector = backLeftCOMVector.perpendicularProjection(backLeftDriveVector,backLeftDriveVector.x, backLeftDriveVector.y);
+        Vector backRightTorqueVector = backRightCOMVector.perpendicularProjection(backRightDriveVector,backRightDriveVector.x, backRightDriveVector.y);
 
+        // Scale vectors by radius and speed
+        frontLeftTorqueVector.scale(frontLeftVel*frontLeftCOMVector.length()*SIZE);
+        frontRightTorqueVector.scale(frontRightVel*frontRightCOMVector.length()*SIZE);
+        backLeftTorqueVector.scale(backLeftVel*backLeftCOMVector.length()*SIZE);
+        backRightTorqueVector.scale(backRightVel*backRightCOMVector.length()*SIZE);
 
+        double resScaleRight = backRightTorqueVector.length()==0?1:frontLeftTorqueVector.length()/backRightTorqueVector.length();
+        double resScaleLeft = backLeftTorqueVector.length()==0?1:frontRightTorqueVector.length()/backLeftTorqueVector.length();
+        double[] result = {resScaleLeft,resScaleRight};
+        return result;
     }
+
+
 }
